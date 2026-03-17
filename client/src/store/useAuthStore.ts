@@ -44,18 +44,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  verifyOtp: async (otpCode: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const username = get().username;
-      const payload: OtpInputs = { username, otp: otpCode };
-      await authApi.validateOtp(payload);
-      set({ step: 'success', isLoading: false });
-    } catch (err: any) {
-      set({ 
-        error: err.response?.data?.message || "Invalid OTP", 
-        isLoading: false 
-      });
-    }
-  },
+verifyOtp: async (otpCode: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    const username = get().username;
+
+    // Convert the string from the input field into an Integer
+    const payload: OtpInputs = { 
+      username, 
+      otp: parseInt(otpCode, 10) // '10' ensures base-10 decimal parsing
+    };
+
+    await authApi.validateOtp(payload);
+    set({ step: 'success', isLoading: false });
+  } catch (err: any) {
+    set({ 
+      error: err.response?.data?.errors?.[0]?.errorMessage || 
+             err.response?.data?.message || 
+             "Invalid OTP", 
+      isLoading: false 
+    });
+  }
+},
 }));

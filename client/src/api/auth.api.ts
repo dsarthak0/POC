@@ -1,9 +1,11 @@
 import api from './axios'
 import type{ LoginInputs,OtpInputs } from '../types/userAuthType';
+
+const devicepublickey=import.meta.env.VITE_DEVICE_PUBLIC_KEY;
 export const authApi={
     //1 Handshake
     preAuthHandshake:async()=>{
-        const response=await api.post('/v1/api/auth/pre-auth-handshake');
+        const response=await api.post('/v1/api/auth/pre-auth-handshake',{devicepublickey});
         return response.data;
     },
 

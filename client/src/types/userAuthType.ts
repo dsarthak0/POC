@@ -17,7 +17,9 @@ export const loginSchema = z.object({
 
 export const otpSchema = z.object({
   username: z.string().min(1,{ message: "Username is required" }), // Fixed
-  otp: z.string().length(4, { message: "OTP must be 4 digits" }), // Fixed
+  otp: z.number().int() // Ensures no decimals
+  .min(1000, { message: "OTP must be at least 4 digits" })
+  .max(9999, { message: "OTP cannot exceed 4 digits" }), 
 });
 
 export type LoginInputs = z.infer<typeof loginSchema>;
