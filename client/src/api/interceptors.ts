@@ -1,6 +1,6 @@
 import type { InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
-import api from './axios'; // Import the instance you just made
+import api from './axios'; 
 import { getAuthHeaders } from '../utils/requestHeader';
 
 /**

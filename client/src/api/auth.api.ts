@@ -20,4 +20,19 @@ export const authApi={
         const response=await api.post('/v2/api/auth/validate-otp',data);
         return response.data;
     },
-}
+    forgotUserId: async (data:{ panNumber: string; emailId: string }) => {
+    return api.post('/v1/api/auth/forgot-user-id',{
+        ...data,
+        timestamp: Date.now()
+
+    }
+     
+    );
+  },
+
+  forgotPassword: async (data: { panNumber: string; username: string }) => {
+    return api.post('/v1/api/auth/forgot-password', {
+        ...data ,
+      timestamp: Date.now()
+    });
+}}
