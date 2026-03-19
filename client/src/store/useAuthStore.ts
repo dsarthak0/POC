@@ -42,33 +42,41 @@ export const useAuthStore = create<AuthState>()(
           console.error("Handshake failed", err);
         }
       },
-
       login: async (data: LoginInputs) => {
-        set({ isLoading: true, error: null}); 
-        try {
-           await authApi.login(data);
-           console.log("Login Success")
-          // Success: Reset blocked status and set purpose
-          set({ loginAttempts:0, purpose: 'login', username: data.username, isUserBlocked: false, isLoading: false });
-        } catch (err: any) {
-          const currentAttempts = get().loginAttempts + 1;
-          const status = err.response?.status;
-          const msg = err.response?.data?.message || "Login failed";
-          
-          const isBlocked = 
-  status === 423 ||                    // Server says it's locked (Official)
-  currentAttempts >= 3 ||              // User failed 3 times (Local)
-  msg.toLowerCase().includes("blocked");
+  set({ isLoading: true, error: null });
 
-          set({ 
-            error: msg, 
-            isUserBlocked: isBlocked, 
-            username: data.username,
-            loginAttempts:currentAttempts, // Vital for the unblock flow
-            isLoading: false 
-          });
-        }
-      },
+  try {
+    await authApi.login(data);
+
+    // ✅ SUCCESS
+    set({
+      purpose: 'login',
+      username: data.username,
+      isUserBlocked: false,
+      isLoading: false,
+    });
+
+  } catch (err: any) {
+    console.log("ERROR:", err.response);
+
+    // ✅ HANDLE BLOCKED USER
+    if (err?.response?.status === 423) {
+      set({
+        error: "USER_LOCKED",
+        isUserBlocked: true,
+        username: data.username,
+        isLoading: false,
+      });
+    } else {
+      set({
+        error: err?.response?.data?.message || "Invalid credentials",
+        isLoading: false,
+      });
+    }
+  }
+},
+
+      
 
       unblockUser: async (payload) => {
         set({ isLoading: true, error: null });

@@ -16,8 +16,20 @@ export const UnblockUser = () => {
 
     try {
       await unblockUser(payload);
+      useAuthStore.setState({
+        purpose: 'unblock',
+        username: payload.username, // store username for use in OTP step
+        error: null,
+      });
       navigate('/verify-otp'); // Go to OTP after unblock-user API success
-    } catch (err:any) { if (err.response?.status === 409) {
+    } catch (err:any) { 
+        if (err.response?.status === 409) {
+            useAuthStore.setState({
+                purpose:'unblock',
+                username: payload.username,
+          error: null,
+
+            })
       navigate('/verify-otp'); }
   };}
 
@@ -33,4 +45,4 @@ export const UnblockUser = () => {
       </form>
     </AuthLayout>
   );
-};
+}; 

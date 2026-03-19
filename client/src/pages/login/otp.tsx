@@ -4,30 +4,44 @@ import { useNavigate } from 'react-router-dom';
 
 export const OtpPage = () => {
   const navigate = useNavigate();
-  const { verifyOtp, error ,purpose,authenticateOtp} = useAuthStore();
+
+  const { verifyOtp, error, purpose, authenticateOtp } = useAuthStore();
 
   const handleOtpChange = async (otpValue: string) => {
-  if (otpValue.length === 4) {
+    if (otpValue.length !== 4) return;
+
+    const numericOtp = parseInt(otpValue, 10);
+    if (isNaN(numericOtp)) return;
+
     try {
-      const numericOtp=parseInt(otpValue,10);
-      if (isNaN(numericOtp)) return ;
       if (purpose === 'unblock') {
-        // CALL THE UNBLOCK-SPECIFIC OTP API
+        // FIX 1: authenticateOtp in your store accepts a plain string (otpCode),
+        // NOT an object. The store internally reads username and sets isUserBlocked: false.
         await authenticateOtp(otpValue);
-        alert("Account unblocked successfully!");
+
+        // FIX 2: username in your store is typed as `string` (never null),
+        // so reset to '' not null — null caused the TS error.
+        useAuthStore.setState({
+          isUserBlocked: false,
+          loginAttempts: 0,
+          purpose: null,
+          username: '', // ✅ empty string, matches store type `string`
+          error: null,
+        });
+
         navigate('/login');
       } else if (purpose === 'reset') {
         await verifyOtp(otpValue);
         navigate('/set-password');
       } else {
+        // Default: login OTP flow
         await verifyOtp(otpValue);
         navigate('/dashboard');
       }
     } catch (err) {
-      console.error("OTP Error", err);
+      console.error('OTP verification failed:', err);
     }
-  }
-};
+  };
 
   return (
     <AuthLayout subtitle="Confirm the 4-digit code sent to your device.">
@@ -39,8 +53,8 @@ export const OtpPage = () => {
 
       <div className="space-y-6">
         <div className="flex flex-col items-center">
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="0000"
             maxLength={4}
             autoFocus
@@ -48,14 +62,15 @@ export const OtpPage = () => {
             className="w-full p-4 text-center text-4xl font-black tracking-[1.5rem] border-2 border-gray-100 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all bg-gray-50"
           />
         </div>
-        
+
         <p className="text-center text-gray-500 text-sm">
-          Didn't receive a code? <button className="text-blue-600 font-bold hover:underline">Resend</button>
+          Didn't receive a code?{' '}
+          <button className="text-blue-600 font-bold hover:underline">Resend</button>
         </p>
 
-        <button 
-          type="button" 
-          onClick={() => navigate('/login')} 
+        <button
+          type="button"
+          onClick={() => navigate('/login')}
           className="w-full text-gray-500 font-semibold text-sm mt-4 hover:text-gray-700"
         >
           Back to Login
@@ -63,4 +78,4 @@ export const OtpPage = () => {
       </div>
     </AuthLayout>
   );
-}; 
+};
