@@ -20,6 +20,8 @@ export const authApi={
         const response=await api.post('/v2/api/auth/validate-otp',data);
         return response.data;
     },
+
+    //4 forgotuserid
     forgotUserId: async (data:{ panNumber: string; emailId: string }) => {
     return api.post('/v1/api/auth/forgot-user-id',{
         ...data,
@@ -29,10 +31,21 @@ export const authApi={
      
     );
   },
+  //5 forgot password
 
   forgotPassword: async (data: { panNumber: string; username: string }) => {
     return api.post('/v1/api/auth/forgot-password', {
         ...data ,
       timestamp: Date.now()
     });
-}}
+
+   
+},
+ //6 Unblock User
+    unblockUser: async (data: { panNumber: string; username: string }) => {
+    return await api.post('/v1/api/auth/unblock-user', data);
+  },
+  //7 Authenticate otp
+authenticateOtp: async (data: { otp: number; username: string; isUserBlocked: boolean }) => {
+    return await api.post('/v1/api/auth/authenticate-otp', data);
+  },}

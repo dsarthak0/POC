@@ -22,5 +22,17 @@ export const otpSchema = z.object({
   .max(9999, { message: "OTP cannot exceed 4 digits" }), 
 });
 
+export const resetPasswordSchema=z.object({
+  password:z.string()
+  .min(10,{message:"Minimum 10 characters required"})
+  .regex(/[0-9]/, { message: "At least one digit required" })
+  .regex(/[@$!%*?&]/, { message: "At least one special character required" }),
+  confirmPassword:z.string()
+})
+.refine((data)=>data.password===data.confirmPassword,{
+  message:"Passwords do not match",
+  path:["confirmPassword"],
+})
 export type LoginInputs = z.infer<typeof loginSchema>;
 export type OtpInputs = z.infer<typeof otpSchema>;
+export type ResetPasswordInputs=z.infer<typeof resetPasswordSchema>;

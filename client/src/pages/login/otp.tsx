@@ -4,20 +4,30 @@ import { useNavigate } from 'react-router-dom';
 
 export const OtpPage = () => {
   const navigate = useNavigate();
-  const { verifyOtp, error } = useAuthStore();
+  const { verifyOtp, error ,purpose,authenticateOtp} = useAuthStore();
 
   const handleOtpChange = async (otpValue: string) => {
-    if (otpValue.length === 4) {
-      try {
+  if (otpValue.length === 4) {
+    try {
+      const numericOtp=parseInt(otpValue,10);
+      if (isNaN(numericOtp)) return ;
+      if (purpose === 'unblock') {
+        // CALL THE UNBLOCK-SPECIFIC OTP API
+        await authenticateOtp(otpValue);
+        alert("Account unblocked successfully!");
+        navigate('/login');
+      } else if (purpose === 'reset') {
         await verifyOtp(otpValue);
-        // If verifyOtp succeeds, move to dashboard
+        navigate('/set-password');
+      } else {
+        await verifyOtp(otpValue);
         navigate('/dashboard');
-      } catch (err) {
-       
-        console.error("OTP Verification failed", err);
       }
+    } catch (err) {
+      console.error("OTP Error", err);
     }
-  }; 
+  }
+};
 
   return (
     <AuthLayout subtitle="Confirm the 4-digit code sent to your device.">

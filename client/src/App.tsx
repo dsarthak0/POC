@@ -4,7 +4,8 @@ import { OtpPage } from './pages/login/otp'
 import { ForgotUserId } from './pages/login/forgetuserid'
 import { ForgotPassword } from './pages/login/forgetpassword'
 import { Dashboard } from './pages/dashboard';
-
+import { SetPassword } from './pages/login/setpassword';
+import { UnblockUser } from './pages/login/unblockuser';
 function App() {
 
   return (
@@ -17,6 +18,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/set-password" element={<SetPassword/>}/>
+        <Route path="/unblock-user" element={<UnblockUser/>}/>
 
     </Routes>
 

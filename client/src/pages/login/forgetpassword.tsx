@@ -14,12 +14,16 @@ export const ForgotPassword = () => {
       panNumber: formData.get('panNumber') as string,
       username: formData.get('username') as string,
     };
-
-    await forgotPassword(payload);
-    // On success, the store sets step back to 'login', 
-    // so we redirect the user to the login page.
-    navigate('/login');
+    try {
+      await forgotPassword(payload);
+      // CHANGE THIS: Go to OTP page to verify the request
+      navigate('/verify-otp'); 
+    } catch (err) {
+      // Error handled by store
+    }
   };
+
+   
 
   return (
     <AuthLayout subtitle="Reset your account password">
