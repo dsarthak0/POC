@@ -28,6 +28,8 @@ export const authApi={
         timestamp: Date.now()
 
     }
+
+    
      
     );
   },
@@ -48,4 +50,11 @@ export const authApi={
   //7 Authenticate otp
 authenticateOtp: async (data: { otp: number; username: string; isUserBlocked: boolean }) => {
     return await api.post('/v1/api/auth/authenticate-otp', data);
-  },}
+  },
+  //8 set password
+
+  setPassword:async (data:{})=>{
+    return await api.post('(v1/api/auth/set-password',data)
+  }
+
+}

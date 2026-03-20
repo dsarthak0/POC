@@ -1,29 +1,42 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
 import { useAuthStore } from '../../store/useAuthStore';
 import { AuthLayout } from '../../shared/components/authlayout';
 import { resetPasswordSchema, type ResetPasswordInputs } from '../../types/userAuthType';
 
 export const SetPassword = () => {
   const navigate = useNavigate();
-  const { isLoading, error } = useAuthStore();
+  const location = useLocation();
+  const { setPassword, isLoading, error } = useAuthStore();
   
+  // Get username passed from the ForgotPassword or OTP initial screen
+  const username = location.state?.username || "AMITH1"; 
+
   const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordInputs>({
     resolver: zodResolver(resetPasswordSchema),
   });
 
- 
   const onSubmit = async (data: ResetPasswordInputs) => {
     try {
-     
-      console.log("Password reset successful:", data);
-      alert("Password has been reset successfully!");
-      
- 
-      navigate('/login'); 
+      // 1. Call Set Password API
+      // Payload: {"username":"AMITH1","password":"Abc@12345"}
+      await setPassword({
+        username: username,
+        password: data.password
+      });
+
+      // 2. If successful, navigate to OTP page
+      // We pass the username and password in state so the OTP page can use them
+      navigate('/verify-otp', { 
+        state: { 
+          username: username,
+          tempPassword: data.password // Useful if authenticate-otp needs context
+        } 
+      }); 
+
     } catch (err) {
-      console.error("Failed to reset password", err);
+      console.error("Failed to set password", err);
     }
   };
 
@@ -34,7 +47,6 @@ export const SetPassword = () => {
           {error}
         </div>
       )}
-      
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-1">

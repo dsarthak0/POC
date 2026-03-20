@@ -15,24 +15,22 @@ export const OtpPage = () => {
 
     try {
       if (purpose === 'unblock') {
-        // FIX 1: authenticateOtp in your store accepts a plain string (otpCode),
-        // NOT an object. The store internally reads username and sets isUserBlocked: false.
+      
         await authenticateOtp(otpValue);
 
-        // FIX 2: username in your store is typed as `string` (never null),
-        // so reset to '' not null — null caused the TS error.
+
         useAuthStore.setState({
           isUserBlocked: false,
           loginAttempts: 0,
           purpose: null,
-          username: '', // ✅ empty string, matches store type `string`
+          username: '', 
           error: null,
         });
 
         navigate('/login');
       } else if (purpose === 'reset') {
-        await verifyOtp(otpValue);
-        navigate('/set-password');
+        await authenticateOtp(otpValue);
+        navigate('/login');
       } else {
         // Default: login OTP flow
         await verifyOtp(otpValue);

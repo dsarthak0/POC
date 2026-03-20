@@ -16,10 +16,10 @@ export const ForgotPassword = () => {
     };
     try {
       await forgotPassword(payload);
-      // CHANGE THIS: Go to OTP page to verify the request
+
       navigate('/verify-otp'); 
     } catch (err) {
-      // Error handled by store
+      
     }
   };
 

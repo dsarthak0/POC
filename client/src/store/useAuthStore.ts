@@ -20,6 +20,7 @@ interface AuthState {
   unblockUser: (data: { panNumber: string; username: string }) => Promise<void>;
   authenticateOtp: (otpCode: string) => Promise<void>;
   setPurpose: (purpose: 'login' | 'reset' | 'unblock') => void;
+  setPassword:(data:{username:string;password:string})=>Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -152,6 +153,17 @@ export const useAuthStore = create<AuthState>()(
           throw err;
         }
       },
+
+      setPassword:async(payload)=>{
+        set({isLoading:true,error:null});
+        try{
+          await authApi.setPassword(payload);
+          set({isLoading:false,purpose:'reset'});
+        }catch(err:any){
+          set({error:err.response?.data?.message||"Failed to set password",isLoading:false});
+          throw err;
+        }
+      }
     }),
     {
       name: 'auth-storage',

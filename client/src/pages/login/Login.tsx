@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '../../store/useAuthStore';
 import { loginSchema, type LoginInputs } from '../../types/userAuthType';
 import { AuthLayout } from '../../shared/components/authlayout';
+import { useEffect } from 'react';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -11,6 +12,12 @@ export const LoginPage = () => {
   const { login, isLoading, error, loginAttempts, isUserBlocked } = useAuthStore();
   console.log("loginAttempts:", loginAttempts);
   console.log("isUserBlocked:", isUserBlocked);
+
+  useEffect(()=>{
+    const init=async()=>{
+      await useAuthStore.getState().performHandshake();
+    };init();
+  },[])
 
   const {
     register,
@@ -40,7 +47,7 @@ export const LoginPage = () => {
         </div>
       )}
 
-      {/* ✅ SHOW UNBLOCK BUTTON AFTER 3 ATTEMPTS */}
+      
       {error === "USER_LOCKED" && (
   <button
     type="button"
